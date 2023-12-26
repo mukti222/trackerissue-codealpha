@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Issue Tracker</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+    <style>
+      h1 {
+        font-weight: 900;
+        font-size: 12vh;
+      }
+
+      .container {
+        margin-left: 0px;
+        margin-right: 0px;
+        width: 100%;
+        display: flex;
+      }
+      .jumbotron {
+        /* padding-left: 0px !important; */
+        /* padding-right: 0px !important; */
+        /* padding: 0px; */
+        /* margin: 0px; */
+        padding-bottom: 50px;
+        font-size: 70%;
+        width: 100%;
+        display: flex;
+        height: 50%;
+      }
+
+      .jumbotron-child1 {
+        padding-right: 15px;
+        padding-top: 0 !important;
+        padding-left: 10px;
+        padding-bottom: 0px;
+      }
+      .jumbotron-child1 h3 {
+        font-weight: 800px;
+      }
+
+      #issueInputForm {
+        padding: 10px;
+        margin-right: 0px;
+        margin-left: 5px;
+        margin-top: 10px;
+        border-radius: 10px;
+        background-color: rgb(195, 211, 254);
+      }
+
+      .jumbotr-left {
+        width: 47.5%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .jumbotr-middle {
+        width: 5%;
+      }
+
+      .jumbotr-right {
+        width: 47.5%;
+        /* display: flex; */
+        /* flex-direction: column; */
+      }
+      .jumbo {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+      }
+      .lefttop {
+        height: 14%;
+        text-align: center;
+      }
+      .leftbottom {
+        height: 86%;
+        /* border: 1px solid black; */
+        /* display: flex; */
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(130, 203, 255);
+        border-radius: 10px;
+      }
+
+      .modal-body {
+        display: flex;
+        flex-direction: row;
+        /* justify-content: space-between; */
+        align-items: center;
+      }
+
+      .modal-item {
+        display: flex;
+        align-items: center;
+        margin-right: 20px;
+      }
+
+      .well button {
+        margin-right: 10px;
+      }
+
+      #issuesList {
+        background-color: rgb(155, 249, 207);
+        border-radius: 10px;
+        padding: 10px;
+        overflow-x: auto;
+        overflow-y: auto;
+        max-height: 80vh;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="col-lg-6">
+        <div>
+          <h1 style="padding-bottom: 0; margin-bottom: 0">Issue Tracker</h1>
+          <p
+            style="
+              font-size: x-large;
+              font-weight: 600;
+              padding-top: 0;
+              padding-left: 5px;
+            "
+          >
+            for Project Management
+          </p>
+        </div>
+        <div class="jumbo">
+          <div class="jumbotr-left">
+            <div class="lefttop">
+              <h3>Issue Chart</h3>
+            </div>
+            <div class="leftbottom">
+              <div class="chart">
+                <canvas id="doughnutChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="jumbotr-middle"></div>
+          <div class="jumbotr-right">
+            <div class="jumbotron-child1">
+              <h3>Add New Issue:</h3>
+            </div>
+            <form id="issueInputForm">
+              <div class="form-group">
+                <label for="issueDescription">Description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="issueDescription"
+                  placeholder="Describe the issue ..."
+                />
+              </div>
+              <div class="form-group">
+                <label for="issueSeverity">Priority</label>
+                <select id="issueSeverity" class="form-control">
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="issueAssignedTo">Assigned To</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="issueAssignedTo"
+                  placeholder="Enter responsible ..."
+                />
+              </div>
+              <div class="form-group">
+                <label for="issueRole">Role</label>
+                <select id="issueRole" class="form-control">
+                  <option value="IT">IT</option>
+                  <option value="Marketing">Marketing</option>
+                  <option value="Sales">Sales</option>
+                  <option value="Scientist">Scientist</option>
+                </select>
+              </div>
+
+              <button
+                id="add-issue"
+                onclick="submitIssue()"
+                class="btn btn-primary"
+              >
+                Add
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <br /><br /><br /><br />
+      <div class="col-lg-6">
+        <div class="issuelist">
+          <h3>Issue List</h3>
+          <div id="issuesList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="issueDetailsModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="issueDetailsModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="issueDetailsModalLabel">
+              Issue Details
+            </h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Description: <span id="modalDescription"></span></p>
+            <p>Priority: <span id="modalPriority"></span></p>
+            <p>Assigned To: <span id="modalAssignedTo"></span></p>
+            <p>Role: <span id="modalRole"></span></p>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button id="updateInProgressBtn" class="btn btn-success">
+              Update to In Progress
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+      integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+      crossorigin="anonymous"
+    ></script>
+    <script src="script.js"></script>
+  </body>
+</html>
